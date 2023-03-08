@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import torch.nn as nn
+from tqdm import tqdm
 
 
 class CNN(nn.Module):
@@ -42,12 +43,28 @@ class IDNGenerator:
         self.loss_fn = loss_fn
 
     def train(self):
-        for batch_idx, (x, y) in enumerate(self.data_loader):
+        self.model.train()
+        loop = tqdm(self.data_loader, leave=True)
+        correct = 0
+        total = 0
+        mean_loss = []
+        for batch_idx, (x, y) in enumerate(loop):
             out = self.model(x)
             loss = self.loss_fn(out, y)
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+
+            mean_loss.append(loss.item())
+            correct += int(sum(out.argmax(axis=1) == y))
+            total += y.size(0)
+
+            loop.set_postfix(loss=loss.item())
+
+        mean_losses = sum(mean_loss) / len(mean_loss)
+        accu = 100. * (correct / total)
+        print(f"Loss: {mean_losses}, Accuracy: {accu}")
+        self.model.eval()
         return self.model(self.X)
 
     def generate(self):
