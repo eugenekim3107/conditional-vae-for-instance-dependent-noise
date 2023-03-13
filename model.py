@@ -10,19 +10,16 @@ class CNN(nn.Module):
         self.in_channel = in_channel
         self.out_channel = out_channel
         self.conv1 = nn.Sequential(
-            nn.Conv2d(in_channel, 16, 5, bias=False),
-            nn.LeakyReLU(0.1),
-            nn.MaxPool2d(3, stride=2, padding=1)
+            nn.Conv2d(in_channel, 16, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(16, 32, 3, bias=False),
-            nn.LeakyReLU(0.1),
-            nn.MaxPool2d(3, stride=2, padding=1)
+            nn.Conv2d(16, 32, kernel_size=5, stride=1, padding=2, bias=False),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
-        self.out = nn.Sequential(
-            nn.Linear(800, out_channel),
-            nn.Sigmoid()
-        )
+        self.out = nn.Linear(1568, 10)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -75,12 +72,12 @@ class IDNGenerator:
         S = sum(S_list) / len(S_list)
         one_hot = torch.zeros((self.y.size(0), self.y.max() + 1))
         one_hot[np.arange(self.y.size(0)), self.y] = True
-        S[one_hot.to(torch.bool)] = 0.
+        S[one_hot.to(torch.bool)] = float('-inf')
         N = torch.amax(S, dim=1)
         y_noise = torch.argmax(S, dim=1)
         num_noise = int(self.p * N.size(0))
         indices = torch.sort(N)[1][:num_noise]
-        y_final = self.y.copy()
+        y_final = self.y.clone().detach()
         for i in indices:
             y_final[i] = y_noise[i]
         return self.X, y_final
