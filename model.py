@@ -190,9 +190,6 @@ def ResNet101():
 def ResNet152():
     return ResNet(Bottleneck, [3,8,36,3])
 
-class VAE(nn.Module):
-    def __init__(self, x_dim):
-
 def main():
     model = ResNet18()
     x = torch.randn((5, 1, 28, 28))
