@@ -28,6 +28,28 @@ class CNN(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.out(x)
         return x
+    
+class MLP(nn.Module):
+    def __init__(self, in_channel, out_channel):
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(in_channel, 128)
+        self.fc2 = nn.Linear(128, out_channel)
+        self.relu = nn.ReLU()
+    def forward(self, x):
+        x = x.view(x.size(0), -1)
+        out = self.relu(self.fc1(x))
+        out = self.fc2(out)
+        return out
+
+class LogisticRegression(nn.Module):
+    def __init__(self, input_size, num_classes):
+        super(LogisticRegression, self).__init__()
+        self.linear = nn.Linear(input_size, num_classes)
+
+    def forward(self, x):
+        x = x.view(x.size(0), -1)  # flatten the input
+        out = self.linear(x)
+        return out
 
 class IDNGenerator:
     def __init__(self, X, y, p, epochs, model, optimizer, loss_fn, data_loader):
@@ -145,7 +167,7 @@ class Bottleneck(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=1):
+    def __init__(self, block, num_blocks, num_classes=10):
         super(ResNet, self).__init__()
         self.in_planes = 64
         self.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -201,12 +223,19 @@ def idx2onehot(idx, n):
     
     return onehot
 
-class CVAE(nn.Module):
+class VAE(nn.Module):
 
     def __init__(self, encoder_layer_sizes, latent_size, decoder_layer_sizes,
                  conditional=False, num_labels=0):
 
-        super(CVAE, self).__init__()
+        super(VAE, self).__init__()
+
+        if conditional:
+            assert num_labels > 0
+
+        assert type(encoder_layer_sizes) == list
+        assert type(latent_size) == int
+        assert type(decoder_layer_sizes) == list
 
         self.latent_size = latent_size
 
@@ -305,7 +334,6 @@ class Decoder(nn.Module):
         x = self.MLP(z)
 
         return x
-
 
 def main():
     model = ResNet18()

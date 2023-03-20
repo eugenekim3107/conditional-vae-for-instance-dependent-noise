@@ -26,6 +26,7 @@ def main(args):
     X = torch.load(args.filename_X_clean)
     y = torch.load(args.filename_y_clean)
     yn = torch.load(args.filename_y_noisy)
+    number = int(args.number)
     
     indices = (y!=yn).nonzero(as_tuple=True)[0]
     
@@ -33,7 +34,7 @@ def main(args):
     y = y[indices]
     yn = yn[indices]
     
-    indices = (y==args.number).nonzero(as_tuple=True)[0]
+    indices = (y==number).nonzero(as_tuple=True)[0]
     
     X = X[indices]
     y = y[indices]
