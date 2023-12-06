@@ -1,5 +1,8 @@
 # Conditional Variational Autoencoder Data Augmentation for Robustness to Instance-Dependent Noise
 
+## Research Paper
+For detailed information about our study and findings, please refer to our research paper. You can access it here: [Report Paper](report_paper.pdf)
+
 ## Abstract
 This paper addresses the critical challenge in deep learning of obtaining high-quality, accurately labeled data. In real-world scenarios, label noise is often unavoidable and can significantly hinder model performance. Traditional artificially generated label noise does not adequately represent real-world conditions. We propose a novel approach using instance-dependent noise (IDN) as a benchmark for modeling real-world label noise, coupled with a deep generative method for effective handling of this issue.
 
